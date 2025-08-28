@@ -1,0 +1,32 @@
+---
+- name: Deploy to Kubernetes
+  hosts: localhost
+  connection: local
+
+  tasks:
+    # Task 1: Check if the Kubernetes manifest files exist
+    - name: Check for Kubernetes manifests
+      stat:
+        path: "{{ item }}"
+      register: manifest_files
+      with_items:
+        - "{{ playbook_dir }}/manifests/my-app.yml"
+
+    # Task 2: Check if all manifest files exist
+    - name: Verify all manifests exist
+      fail:
+        msg: "Required Kubernetes manifest file does not exist: {{ item.item }}"
+      when: not item.stat.exists
+      with_items: "{{ manifest_files.results }}"
+
+    # Task 3: Apply the Kubernetes manifests
+    - name: Apply Kubernetes manifests
+      command: "kubectl -f {{ item }}"
+      with_items:
+        - "{{ playbook_dir }}/manifests/my-app.yml"
+      register: kubectl_output
+
+    # Task 4: Display the results of the deployment
+    - name: Display kubectl output
+      debug:
+        var: kubectl_output.stdout_lines
