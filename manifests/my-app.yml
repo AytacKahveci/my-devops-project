@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: my-app
-        image: my-app:latest
+        image: kaytac/my-app:latest
         ports:
           - containerPort: 51500 # app
           - containerPort: 8000 # Prometheus metrics port
