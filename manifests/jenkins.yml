@@ -15,9 +15,13 @@ spec:
       labels:
         app: jenkins
     spec:
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 999 # The GID of the 'docker' group on the host
       containers:
       - name: jenkins
-        image: jenkins/jenkins:lts
+        image: kaytac/jenkins-custom:1.0
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 8080
         - containerPort: 50000
@@ -32,7 +36,7 @@ spec:
       - name: docker-socket
         hostPath:
           path: /var/run/docker.sock
-          type: File
+          type: Socket
 ---
 apiVersion: v1
 kind: Service
